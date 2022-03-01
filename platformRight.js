@@ -7,6 +7,21 @@ game.platformRight = {
   vY: 0,  // Y-axis movement velocity
   ball: game.ball,
 
+  moveArtificialIntelligence() {
+    // this.vY = this.velocity
+    this.vY = Math.abs(this.ball.vY)
+
+    if (this.ball.y < this.y + this.height / 2) {
+      this.y = this.y - this.ball.vY
+    }
+    else {
+      this.y = this.y + this.ball.vY
+    }
+    if (50 < this.y && this.y < game.height - this.height - 50) {
+      this.y = this.y
+    }
+  },
+
   collideCanvasBounds() {
     // Change of coordinates on next render
     const y = this.y + this.vY
