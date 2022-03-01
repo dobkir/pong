@@ -33,7 +33,6 @@ game.ball = {
       x < element.x + element.width &&
       y + this.height > element.y &&
       y < element.y + element.height) {
-      console.log(game.ball.velocity)
       return true
     }
     return false
@@ -102,12 +101,10 @@ game.ball = {
       game.sounds.bump.play()
       this.y = 0
       this.vY = this.velocity + 1.5
-      console.log(game.ball.velocity)
     } else if (ballBottomSide >= canvasBottomSide) {
       game.sounds.bump.play()
       this.y = canvasBottomSide - this.height
       this.vY = -this.velocity - 1.5
-      console.log(game.ball.velocity)
     }
   },
 
