@@ -41,11 +41,10 @@ game.ball = {
     const canvasTopSide = 0;
     const canvasBottomSide = game.height
 
-    if (ballLeftSide < canvasLeftSide || ballRightSide > canvasRightSide) {
-      // ========================= LOSING ========================= //
-      this.velocity = 0
-      // alert('Game Over')
-      console.log('Game Over')
+    if (ballLeftSide < canvasLeftSide) {
+      game.addScoreComputer()
+    } else if (ballRightSide > canvasRightSide) {
+      game.addScorePlayer()
     } else if (ballTopSide < canvasTopSide) {
       this.y = 0
       this.vY = this.velocity

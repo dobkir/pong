@@ -14,6 +14,8 @@ const game = {
   platformLeft: null,
   platformRight: null,
   ball: null,
+  scorePlayer: 0,
+  scoreComputer: 0,
   sprites: {
     platformLeft: null,
     platformRight: null,
@@ -34,6 +36,23 @@ const game = {
     } else {
       alert('To display the content, please update your browser.')
     }
+    // // рисуем на поле счёт
+    // this.context.font = 'bold 128px courier';
+    // this.context.textAlign = 'center';
+    // this.context.textBaseline = 'top';
+    // this.context.fillStyle = '#ccc';
+    // this.context.fillText("ai.scores", 100, 0);
+    // this.context.fillText("player.scores", game.width - 100, 0);
+    // for (var i = 10; i < game.height; i += 45) // линия разделяющая игровое поле на две части
+    // {
+    //   this.context.fillStyle = "#ccc";
+    //   this.context.fillRect(game.width / 2 - 10, i, 20, 30);
+    // }
+  },
+
+  setTextFont() {
+    this.context.fillStyle = "#fafafa"
+    this.context.font = "22px Arial"
   },
 
   setKeyboardKeyEvents() {
@@ -83,9 +102,16 @@ const game = {
         this[sprite].x,
         this[sprite].y,
         this[sprite].width,
-        this[sprite].height
+        this[sprite].height,
       )
     })
+    // Render scores
+    this.context.fillText("Your score: " + this.scorePlayer, 70, 28)
+    this.context.fillText("Computer score: " + this.scoreComputer, this.width - 260, 28)
+    // Dividing line
+    for (var i = 10; i < game.height; i += 45) {
+      this.context.fillRect(game.width / 2 - 1.5, i, 3, 30)
+    }
   },
 
   collideBallAndPlatform(obj1, obj2) {
@@ -93,11 +119,36 @@ const game = {
       obj1.x < obj2.x + obj2.width &&
       obj1.y + obj1.height > obj2.y &&
       obj1.y < obj2.y + obj2.height) {
-      return true;
+      return true
     }
     else {
-      return false;
+      return false
     }
+  },
+
+  addScorePlayer() {
+    ++this.scorePlayer
+    if (this.scorePlayer == 5) {
+      this.endGame('You won this game!')
+    } else {
+      this.setLocalStorage('scorePlayer', this.scorePlayer)
+    }
+    game.reloadGame()
+  },
+
+  addScoreComputer() {
+    ++this.scoreComputer
+    if (this.scoreComputer === 5) {
+      this.endGame('You lose this game!')
+    } else {
+      this.setLocalStorage('scoreComputer', this.scoreComputer)
+    }
+    game.reloadGame()
+  },
+
+  clearAllScores() {
+    this.setLocalStorage('scorePlayer', 0)
+    this.setLocalStorage('scoreComputer', 0)
   },
 
   updateState() {
@@ -114,6 +165,11 @@ const game = {
     this.platformRight.moveArtificialIntelligence()
     this.platformLeft.move()
     this.ball.move()
+  },
+
+  reloadGame() {
+    this.gameRun = false
+    window.location.reload()
   },
 
   // Start of the animation
@@ -133,6 +189,8 @@ const game = {
   initGame() {
     this.initCanvas()
     this.setKeyboardKeyEvents()
+    this.getLocalStorage()
+    this.setTextFont()
   },
 
   startGame() {
@@ -140,6 +198,32 @@ const game = {
     this.preloadSprites(() => {
       this.runGame()
     })
+  },
+
+  endGame(messageType) {
+    this.clearAllScores()
+    if (this.gameRun) {
+      this.gameRun = false
+      this.gameOver = true
+      alert(messageType)
+    }
+  },
+
+  // Set scores to Local Storage
+  setLocalStorage(scoreType, score) {
+    localStorage.setItem(scoreType, score)
+  },
+
+  // Get scores from Local Storage
+  getLocalStorage() {
+    this.scorePlayer =
+      localStorage.getItem('scorePlayer') !== null ?
+        localStorage.getItem('scorePlayer') :
+        0
+    this.scoreComputer =
+      localStorage.getItem('scoreComputer') !== null ?
+        localStorage.getItem('scoreComputer') :
+        0
   },
 }
 
