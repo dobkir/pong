@@ -5,12 +5,12 @@ const game = {
   gameRun: true,
   gamePause: false,
   gameOver: false,
-  leftPlatform: null,
-  rightPlatform: null,
+  platformLeft: null,
+  platformRight: null,
   ball: null,
   sprites: {
-    leftPlatform: null,
-    rightPlatform: null,
+    platformLeft: null,
+    platformRight: null,
     ball: null,
   },
 
@@ -53,9 +53,15 @@ const game = {
 
   // Render all preloaded images
   renderSprites() {
-    this.context.drawImage(this.sprites.leftPlatform, 0, (game.height / 2) - (112 / 2), 40, 112)
-    this.context.drawImage(this.sprites.rightPlatform, game.width - 40, (game.height / 2) - (112 / 2), 40, 112)
-    this.context.drawImage(this.sprites.ball, (game.width / 2) - (40 / 2), (game.height / 2) - (40 / 2), 40, 40)
+    Object.keys(this.sprites).forEach(sprite => {
+      this.context.drawImage(
+        this.sprites[sprite],
+        this[sprite].x,
+        this[sprite].y,
+        this[sprite].width,
+        this[sprite].height
+      )
+    });
   },
 
   // Start of the animation
