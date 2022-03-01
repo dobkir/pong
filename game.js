@@ -1,3 +1,8 @@
+const KEYS = {
+  UP: 38,
+  DOWN: 40,
+}
+
 const game = {
   width: 960,
   height: 640,
@@ -30,30 +35,46 @@ const game = {
     }
   },
 
+  setKeyboardKeyEvents() {
+    // Moving the left platform
+    window.addEventListener("keydown", e => {
+      if (e.keyCode === KEYS.UP || e.keyCode === KEYS.DOWN) {
+        this.platformLeft.start(e.keyCode)
+      }
+    })
+    // Stop the left platform
+    window.addEventListener("keyup", e => {
+      this.platformLeft.stop()
+    })
+  },
+
   // Preload the images
   preloadSprites(callback) {
     let loadedSprites = 0
     let requiredSprites = Object.keys(this.sprites).length;
+    let onImageLoad = () => {
+      // On the fact of each upload, I'll make an increment that 
+      // means one more image has been currently uploaded
+      ++loadedSprites
+      if (loadedSprites >= requiredSprites) {
+        callback()
+      }
+    }
 
     for (let key in this.sprites) {
       this.sprites[key] = new Image()
       this.sprites[key].src = `img/${key}.png`
-
       // Continue only when all sprites are loaded
-      this.sprites[key].addEventListener("load", () => {
-        // On the fact of each upload, I'll make an increment that 
-        // means one more image has been currently uploaded
-        ++loadedSprites
-        if (loadedSprites >= requiredSprites) {
-          callback()
-        }
-      })
+      this.sprites[key].addEventListener("load", onImageLoad)
     }
   },
 
   // Render all preloaded images
   renderSprites() {
-    Object.keys(this.sprites).forEach(sprite => {
+    // Clear sprites rectangles before each new rendering
+    this.context.clearRect(0, 0, this.width, this.height)
+    let spriesArr = Object.keys(this.sprites)
+    for (sprite of spriesArr) {
       this.context.drawImage(
         this.sprites[sprite],
         this[sprite].x,
@@ -61,7 +82,11 @@ const game = {
         this[sprite].width,
         this[sprite].height
       )
-    });
+    }
+  },
+
+  updateState() {
+    this.platformLeft.move()
   },
 
   // Start of the animation
@@ -69,16 +94,18 @@ const game = {
     // When running is true, it means that the game is running
     if (this.gameRun) {
       window.requestAnimationFrame(() => {
+        this.updateState()
         this.renderSprites()
         // Calls itself recursively for each frame of the animation
         this.runGame()
-      });
+      })
     }
   },
 
   // Initialization of all components the game required
   initGame() {
     this.initCanvas()
+    this.setKeyboardKeyEvents()
   },
 
   random(min, max) {
