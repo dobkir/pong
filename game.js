@@ -8,6 +8,11 @@ const game = {
   leftPlatform: null,
   rightPlatform: null,
   ball: null,
+  sprites: {
+    leftPlatform: null,
+    rightPlatform: null,
+    ball: null,
+  },
 
 
   initCanvas() {
@@ -26,22 +31,31 @@ const game = {
   },
 
   // Preload the images
-  preloadSprites() {
-    this.leftPlatform = new Image()
-    this.leftPlatform.src = 'img/leftPLatform.png'
+  preloadSprites(callback) {
+    let loadedSprites = 0
+    let requiredSprites = Object.keys(this.sprites).length;
 
-    this.rightPlatform = new Image()
-    this.rightPlatform.src = 'img/rightPLatform.png'
+    for (let key in this.sprites) {
+      this.sprites[key] = new Image()
+      this.sprites[key].src = `img/${key}.png`
 
-    this.ball = new Image()
-    this.ball.src = 'img/ball.png'
+      // Continue only when all sprites are loaded
+      this.sprites[key].addEventListener("load", () => {
+        // On the fact of each upload, I'll make an increment that 
+        // means one more image has been currently uploaded
+        ++loadedSprites
+        if (loadedSprites >= requiredSprites) {
+          callback()
+        }
+      })
+    }
   },
 
   // Render all preloaded images
   renderSprites() {
-    this.context.drawImage(this.leftPlatform, 0, (game.height / 2) - (112 / 2), 40, 112)
-    this.context.drawImage(this.rightPlatform, game.width - 40, (game.height / 2) - (112 / 2), 40, 112)
-    this.context.drawImage(this.ball, (game.width / 2) - (40 / 2), (game.height / 2) - (40 / 2), 40, 40)
+    this.context.drawImage(this.sprites.leftPlatform, 0, (game.height / 2) - (112 / 2), 40, 112)
+    this.context.drawImage(this.sprites.rightPlatform, game.width - 40, (game.height / 2) - (112 / 2), 40, 112)
+    this.context.drawImage(this.sprites.ball, (game.width / 2) - (40 / 2), (game.height / 2) - (40 / 2), 40, 40)
   },
 
   // Start of the animation
@@ -68,8 +82,9 @@ const game = {
 
   startGame() {
     this.initGame()
-    this.preloadSprites()
-    this.runGame()
+    this.preloadSprites(() => {
+      this.runGame()
+    })
   },
 }
 
