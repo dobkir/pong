@@ -3,25 +3,43 @@ game.platformLeft = {
   height: 112,
   x: 0,
   y: (game.height - 112) / 2,
-  speed: 6,
-  dy: 0,
+  velocity: 6,
+  vY: 0,  // Y-axis movement velocity
+  ball: game.ball,
 
+  startBall() {
+    console.log(game.ball)
+    console.log(this.ball)
+    console.log('Start the ball')
+    // if a ball on the platform
+    if (this.ball) {
+      // then activate start() function
+      this.ball.start()
+      // and there is no ball on the platform now
+      this.ball = null
+    }
+  },
 
   start(direction) {
+
     if (direction === KEYS.UP) {
-      this.dy = -this.speed
+      this.vY = -this.velocity
     } else if (direction === KEYS.DOWN) {
-      this.dy = this.speed
+      this.vY = this.velocity
     }
   },
 
   stop() {
-    this.dy = 0
+    this.vY = 0
   },
 
   move() {
-    if (this.dy) {
-      this.y += this.dy
+    if (this.vY) {
+      this.y += this.vY
+      // When a ball is on the platform, then they moving together.
+      if (this.ball) {
+        this.ball.y += this.vY
+      }
     }
   },
 }

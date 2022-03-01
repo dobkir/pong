@@ -1,4 +1,7 @@
+
+
 const KEYS = {
+  SPACE: 32,
   UP: 38,
   DOWN: 40,
 }
@@ -37,13 +40,15 @@ const game = {
 
   setKeyboardKeyEvents() {
     // Moving the left platform
-    window.addEventListener("keydown", e => {
-      if (e.keyCode === KEYS.UP || e.keyCode === KEYS.DOWN) {
-        this.platformLeft.start(e.keyCode)
+    window.addEventListener("keydown", event => {
+      if (event.keyCode === KEYS.SPACE) {
+        this.platformLeft.startBall()
+      } else if (event.keyCode === KEYS.UP || event.keyCode === KEYS.DOWN) {
+        this.platformLeft.start(event.keyCode)
       }
     })
     // Stop the left platform
-    window.addEventListener("keyup", e => {
+    window.addEventListener("keyup", event => {
       this.platformLeft.stop()
     })
   },
@@ -73,8 +78,7 @@ const game = {
   renderSprites() {
     // Clear sprites rectangles before each new rendering
     this.context.clearRect(0, 0, this.width, this.height)
-    let spriesArr = Object.keys(this.sprites)
-    for (sprite of spriesArr) {
+    Object.keys(this.sprites).forEach(sprite => {
       this.context.drawImage(
         this.sprites[sprite],
         this[sprite].x,
@@ -82,11 +86,12 @@ const game = {
         this[sprite].width,
         this[sprite].height
       )
-    }
+    })
   },
 
   updateState() {
     this.platformLeft.move()
+    this.ball.move()
   },
 
   // Start of the animation
