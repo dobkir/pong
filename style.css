@@ -98,6 +98,7 @@ a:active {
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 1;
 
   display: flex;
   width: 100%;
@@ -191,7 +192,7 @@ a:active {
   border-radius: 12px;
   background: linear-gradient(to bottom,
     rgba(198, 53, 201, 0.6) 0%,
-    rgba(129, 30, 131, 0.6) 100%);
+    #811e8399 100%);
   box-shadow: inset 10px 5px (98, 23, 99, 0.6),
     0 5px 5px rgb(0 0 0 / 20%);  
   transform: scale(0.5);

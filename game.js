@@ -23,7 +23,7 @@ const game = {
   ball: null,
   scorePlayer: 0,
   scoreComputer: 0,
-  winningScore: 2,
+  winningScore: 11,
   sprites: {
     platformLeft: null,
     platformRight: null,
