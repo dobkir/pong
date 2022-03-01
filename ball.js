@@ -90,13 +90,13 @@ game.ball = {
     const canvasBottomSide = game.height
 
     if (ballLeftSide < canvasLeftSide) {
-      game.sounds.bump.pause()
+      game.gameRun = false
       game.sounds.fail.play()
-      game.addScoreComputer()
+      setTimeout(() => game.addScoreComputer(), 600)
     } else if (ballRightSide >= canvasRightSide) {
-      game.sounds.bump.pause()
+      game.gameRun = false
       game.sounds.victory.play()
-      game.addScorePlayer()
+      setTimeout(() => game.addScorePlayer(), 600)
     } else if (ballTopSide <= canvasTopSide) {
       game.sounds.bump.play()
       this.y = 0
