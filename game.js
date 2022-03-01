@@ -110,17 +110,16 @@ const game = {
     !this.level && this.modalWindow.openModal()
 
     if (this.level === 'beginner') {
-      this.ball.velocity = 6
       this.setLocalStorage('level', 'beginner')
+      this.setLocalStorage('ballVelocity', 6)
       this.modalWindow.closeModal()
     } else if (this.level === 'gamer') {
-      this.ball.velocity = 8
       this.setLocalStorage('level', 'gamer')
+      this.setLocalStorage('ballVelocity', 8)
       this.modalWindow.closeModal()
     } else if (this.level === 'professional') {
-      this.ball.velocity = 10
-      this.platformLeft.velocity = 8
       this.setLocalStorage('level', 'professional')
+      this.setLocalStorage('ballVelocity', 12)
       this.modalWindow.closeModal()
     }
 
@@ -230,6 +229,7 @@ const game = {
   addScorePlayer() {
     ++this.scorePlayer
     if (this.scorePlayer >= this.winningScore) {
+      game.gameRun = true
       this.endGame(this.modalWinning)
     } else {
       this.setLocalStorage('scorePlayer', this.scorePlayer)
@@ -240,6 +240,7 @@ const game = {
   addScoreComputer() {
     ++this.scoreComputer
     if (this.scoreComputer >= this.winningScore) {
+      game.gameRun = true
       this.endGame(this.modalLosing)
     } else {
       this.setLocalStorage('scoreComputer', this.scoreComputer)
@@ -251,6 +252,7 @@ const game = {
     this.setLocalStorage('scorePlayer', 0)
     this.setLocalStorage('scoreComputer', 0)
     this.setLocalStorage('level', 0)
+    this.setLocalStorage('ballVelocity', 0)
   },
 
   updateState() {
@@ -362,14 +364,6 @@ const game = {
     this.reloadGame()
   },
 
-  clearParameters() {
-    this.platformLeft = game.platformLeft
-    this.platformRight = game.platformRight
-    this.ball = game.ball
-    this.scorePlayer = 0
-    this.scoreComputer = 0
-  },
-
   closeModalWindow(event) {
     if (this.level && this.modalWindow.content && event.target.value === 'closeModal') {
       this.modalWindow.closeModal()
@@ -457,6 +451,8 @@ const game = {
         this.preloadResouses(() => {
           this.runGame()
         })
+    this.ball.velocity =
+      +localStorage.getItem('ballVelocity')
   },
 }
 

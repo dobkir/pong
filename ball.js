@@ -10,7 +10,7 @@ game.ball = {
   start() {
     this.vX = this.velocity
     // The random movement of a ball along the Y-axis
-    this.vY = this.random(-this.velocity, this.velocity)
+    this.vY = this.random(1, 10)
   },
 
   move() {
@@ -33,6 +33,7 @@ game.ball = {
       x < element.x + element.width &&
       y + this.height > element.y &&
       y < element.y + element.height) {
+      console.log(game.ball.velocity)
       return true
     }
     return false
@@ -92,19 +93,21 @@ game.ball = {
     if (ballLeftSide < canvasLeftSide) {
       game.gameRun = false
       game.sounds.fail.play()
-      setTimeout(() => game.addScoreComputer(), 600)
+      setTimeout(() => game.addScoreComputer(), 1000)
     } else if (ballRightSide >= canvasRightSide) {
       game.gameRun = false
       game.sounds.victory.play()
-      setTimeout(() => game.addScorePlayer(), 600)
+      setTimeout(() => game.addScorePlayer(), 1400)
     } else if (ballTopSide <= canvasTopSide) {
       game.sounds.bump.play()
       this.y = 0
-      this.vY = this.velocity
+      this.vY = this.velocity + 1.5
+      console.log(game.ball.velocity)
     } else if (ballBottomSide >= canvasBottomSide) {
       game.sounds.bump.play()
       this.y = canvasBottomSide - this.height
-      this.vY = -this.velocity
+      this.vY = -this.velocity - 1.5
+      console.log(game.ball.velocity)
     }
   },
 
