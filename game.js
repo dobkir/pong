@@ -1,23 +1,29 @@
+const CANVAS = document.querySelector(".canvas")
+const HELP = document.querySelector(".help")
+
 const KEYS = {
+  ESCAPE: 27,
   SPACE: 32,
   UP: 38,
   DOWN: 40,
+  H: 72,
+  P: 80,
 }
 
 const game = {
-  // width: 960,
-  // height: 640,
   width: innerWidth,
   height: innerHeight,
   context: null,
   gameRun: true,
   gamePause: false,
   gameOver: false,
+  level: null,
   platformLeft: null,
   platformRight: null,
   ball: null,
   scorePlayer: 0,
   scoreComputer: 0,
+  winningScore: 2,
   sprites: {
     platformLeft: null,
     platformRight: null,
@@ -26,13 +32,25 @@ const game = {
 
 
   initCanvas() {
-    const CANVAS = document.createElement('canvas')
-    CANVAS.classList.add('game-canvas')
+    let realWidth = window.innerWidth * window.devicePixelRatio
+    let realHeight = window.innerHeight * window.devicePixelRatio
+    let maxHeight = this.height
+    let maxWidth = this.width
+    /* 
+     *  Always fully fit the width
+     *  It means that the final width is maxWidth, then the proportion is fair:
+     *  realWidth / realHeight
+     *  maxWidth / resultHeight
+     *  resultHeight = maxWidth * realHeight / realWidth
+     *  Round down and cut off everything above maxWidth
+     */
+    this.height = Math.min(Math.floor(maxWidth * realHeight / realWidth), maxHeight)
     CANVAS.width = this.width
     CANVAS.height = this.height
     CANVAS.style = 'background-color: #141414;'
-    document.body.appendChild(CANVAS)
+  },
 
+  initContext() {
     if (CANVAS.getContext) {
       this.context = CANVAS.getContext('2d')
     } else {
@@ -45,9 +63,51 @@ const game = {
     this.context.font = "22px Arial"
   },
 
+  setLevel() {
+    this.toggleHelpIcon()
+    function chooseLevel(event) {
+      if (event.target.name === 'modalChooseButton') {
+        this.level = event.target.value;
+        this.startGame()
+        document.body.removeEventListener('click', chooseLevel)
+      }
+    }
+    !this.level && document.body.addEventListener('click', chooseLevel.bind(game))
+  },
+
+  setLevelSettings() {
+    this.setLevel()
+    this.modalWindow.content = this.modalChoosingLevel
+    !this.level && this.modalWindow.openModal()
+
+    if (this.level === 'beginner') {
+      this.ball.velocity = 6
+      this.setLocalStorage('level', 'beginner')
+      this.modalWindow.closeModal()
+    } else if (this.level === 'gamer') {
+      this.ball.velocity = 8
+      this.setLocalStorage('level', 'gamer')
+      this.modalWindow.closeModal()
+    } else if (this.level === 'professional') {
+      this.ball.velocity = 10
+      this.platformLeft.velocity = 8
+      this.setLocalStorage('level', 'professional')
+      this.modalWindow.closeModal()
+    }
+
+  },
+
+  toggleHelpIcon() {
+    if (HELP.classList.contains('hidden')) {
+      HELP.classList.remove('hidden')
+    } else {
+      HELP.classList.add('hidden')
+    }
+  },
+
   setKeyboardKeyEvents() {
     // Moving the left platform
-    window.addEventListener("keydown", event => {
+    window.addEventListener('keydown', event => {
       if (event.keyCode === KEYS.SPACE) {
         this.platformLeft.startBall()
       } else if (event.keyCode === KEYS.UP || event.keyCode === KEYS.DOWN) {
@@ -55,8 +115,16 @@ const game = {
       }
     })
     // Stop the left platform
-    window.addEventListener("keyup", event => {
+    window.addEventListener('keyup', event => {
       this.platformLeft.stop()
+    })
+    // Paused and unpaused the game
+    window.addEventListener('keydown', e => {
+      if (!this.gamePause && e.keyCode === KEYS.P) {
+        this.pausedGame()
+      } else if (this.gamePause && (e.keyCode === KEYS.P || e.keyCode === KEYS.ESCAPE)) {
+        this.unpausedGame()
+      }
     })
   },
 
@@ -77,7 +145,7 @@ const game = {
       this.sprites[key] = new Image()
       this.sprites[key].src = `img/${key}.png`
       // Continue only when all sprites are loaded
-      this.sprites[key].addEventListener("load", onImageLoad)
+      this.sprites[key].addEventListener('load', onImageLoad)
     }
   },
 
@@ -85,8 +153,7 @@ const game = {
   renderSprites() {
     // Clear sprites rectangles before each new rendering
     this.context.clearRect(0, 0, this.width, this.height)
-    // Scale canvas
-    this.context.scale(innerWidth / this.width, innerHeight / this.height)
+
     // Render sprites 
     Object.keys(this.sprites).forEach(sprite => {
       this.context.drawImage(
@@ -98,8 +165,8 @@ const game = {
       )
     })
     // Render scores
-    this.context.fillText("Your score: " + this.scorePlayer, 70, 28)
-    this.context.fillText("Computer score: " + this.scoreComputer, this.width - 260, 28)
+    this.context.fillText('Your score: ' + this.scorePlayer, 70, 28)
+    this.context.fillText('Computer score: ' + this.scoreComputer, this.width - 260, 28)
     // Dividing line
     for (var i = 10; i < game.height; i += 45) {
       this.context.fillRect(game.width / 2 - 1.5, i, 3, 30)
@@ -108,27 +175,28 @@ const game = {
 
   addScorePlayer() {
     ++this.scorePlayer
-    if (this.scorePlayer == 5) {
-      this.endGame('You won this game!')
+    if (this.scorePlayer >= this.winningScore) {
+      this.endGame(this.modalWinning)
     } else {
       this.setLocalStorage('scorePlayer', this.scorePlayer)
+      game.reloadGame()
     }
-    game.reloadGame()
   },
 
   addScoreComputer() {
     ++this.scoreComputer
-    if (this.scoreComputer === 5) {
-      this.endGame('You lose this game!')
+    if (this.scoreComputer >= this.winningScore) {
+      this.endGame(this.modalLosing)
     } else {
       this.setLocalStorage('scoreComputer', this.scoreComputer)
+      game.reloadGame()
     }
-    game.reloadGame()
   },
 
-  clearAllScores() {
+  clearLocalStorage() {
     this.setLocalStorage('scorePlayer', 0)
     this.setLocalStorage('scoreComputer', 0)
+    this.setLocalStorage('level', 0)
   },
 
   updateState() {
@@ -174,10 +242,17 @@ const game = {
 
   // Initialization of all components the game required
   initGame() {
-    this.initCanvas()
-    this.setKeyboardKeyEvents()
     this.getLocalStorage()
+
+    this.initCanvas()
+    this.initContext()
+    this.setKeyboardKeyEvents()
+
     this.setTextFont()
+    this.level && this.setKeyboardKeyEvents()
+
+    HELP.addEventListener('click', this.clickToOpenHelp.bind(game))
+    this.keysHelpModal()
   },
 
   startGame() {
@@ -188,12 +263,109 @@ const game = {
   },
 
   endGame(messageType) {
-    this.clearAllScores()
-    if (this.gameRun) {
+    if (!this.modalWindow.content && this.gameRun) {
+      this.modalWindow.content = messageType
+      this.modalWindow.openModal()
+      this.clearLocalStorage()
       this.gameRun = false
-      this.gameOver = true
-      alert(messageType)
+      // this.gameOver = true
+
+      document.body.addEventListener('click', this.confirmEndGame.bind(game))
     }
+  },
+
+  pausedGame() {
+    this.gameRun = false
+    this.gamePause = true
+    this.modalWindow.content = this.modalGamePaused
+    this.modalWindow.openModal()
+  },
+
+  unpausedGame() {
+    this.modalWindow.closeModal()
+    this.gamePause = false
+    this.gameRun = true
+    this.runGame()
+  },
+
+  clearParameters() {
+    this.platformLeft = game.platformLeft
+    this.platformRight = game.platformRight
+    this.ball = game.ball
+    this.scorePlayer = 0
+    this.scoreComputer = 0
+  },
+
+  confirmEndGame(event) {
+    if (event.target.value === 'mainMenu') {
+      this.reloadGame()
+    }
+    document.body.removeEventListener('click', this.confirmEndGame)
+  },
+
+  closeModalWindow(event) {
+    if (this.level && this.modalWindow.content && event.target.value === 'closeModal') {
+      this.modalWindow.closeModal()
+    } else if (!this.level && this.modalWindow.content === this.modalHelpTutorial) {
+      this.modalWindow.closeModal()
+      this.modalWindow.content = this.modalChoosingLevel
+      this.modalWindow.openModal()
+    }
+    document.body.removeEventListener('click', this.closeModalWindow)
+  },
+
+  openHelpTutorial() {
+    this.modalWindow.content = this.modalHelpTutorial
+    this.modalWindow.openModal()
+    document.body.addEventListener('click', this.closeModalWindow.bind(game))
+    HELP.addEventListener('click', this.clickToCloseHelp.bind(game))
+  },
+
+  closeHelpTutorial() {
+    this.modalWindow.closeModal()
+    this.modalWindow.content = this.modalChoosingLevel
+    this.modalWindow.openModal()
+  },
+
+  keysHelpModal() {
+    // Open and close Help Tutorial
+    window.addEventListener('keydown', e => {
+      if (!this.modalWindow.content && e.keyCode === KEYS.H) {
+        this.openHelpTutorial()
+      } else if (this.modalWindow.content === this.modalChoosingLevel && e.keyCode === KEYS.H) {
+        this.modalWindow.closeModal()
+        this.modalWindow.content = this.modalHelpTutorial
+        this.modalWindow.openModal()
+      } else if (this.modalWindow.content === this.modalHelpTutorial && (e.keyCode === KEYS.H || e.keyCode === KEYS.ESCAPE)) {
+        this.closeHelpTutorial()
+      }
+    })
+  },
+
+  clickToOpenHelp(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    document.body.addEventListener('click', this.closeModalWindow.bind(game))
+    if (!this.modalWindow.content && event.target.classList.contains('help')) {
+      this.openHelpTutorial()
+    } else if (this.modalWindow.content && this.modalWindow.content !== this.modalHelpTutorial && event.target.classList.contains('help')) {
+      this.modalWindow.closeModal()
+      this.modalWindow.content = this.modalHelpTutorial
+      this.modalWindow.openModal()
+
+    }
+    HELP.addEventListener('click', this.clickToCloseHelp.bind(game))
+    HELP.removeEventListener('click', this.clickToOpenHelp)
+  },
+
+  clickToCloseHelp(event) {
+    if (this.level && this.modalWindow.content === this.modalHelpTutorial && event.target.classList.contains('help')) {
+      this.closeHelpTutorial()
+    } else if (!this.level && this.modalWindow.content === this.modalHelpTutorial && event.target.classList.contains('help')) {
+      this.closeModalWindow()
+    }
+    HELP.addEventListener('click', this.clickToOpenHelp.bind(game))
+    HELP.removeEventListener('click', this.clickToCloseHelp)
   },
 
   // Set scores to Local Storage
@@ -211,9 +383,16 @@ const game = {
       localStorage.getItem('scoreComputer') !== null ?
         localStorage.getItem('scoreComputer') :
         0
+    this.level =
+      localStorage.getItem('level') === null ||
+        localStorage.getItem('level') == 0 ?
+        this.setLevelSettings() :
+        this.preloadSprites(() => {
+          this.runGame()
+        })
   },
 }
 
 window.addEventListener('load', () => {
-  game.startGame()
+  game.initGame()
 })

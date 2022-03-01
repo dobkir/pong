@@ -1,45 +1,79 @@
-html {
-  overflow: hidden;
-}
-
-.body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100vw;
-  height: 100vh;
+body {
   margin: 0;
   padding: 0;
 
   font-family: -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    "Noto Sans",
-    sans-serif,
-    "Apple Color Emoji",
-    "Segoe UI Emoji",
-    "Segoe UI Symbol",
-    "Noto Color Emoji";
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      "Noto Sans",
+      sans-serif,
+      "Apple Color Emoji",
+      "Segoe UI Emoji",
+      "Segoe UI Symbol",
+      "Noto Color Emoji";
   font-size: 1.2rem;
-  line-height: 2.4rem;
-  color: #efefef;
+  line-height: 2.2rem;
+  color: #fafafa;  
 
   background-color: #141414;
-  background: url(img/milky-way-1920x763.jpg) 50% 50% no-repeat;
-  background-size: cover;
 }
 
-.game-canvas {
-  border: 1px solid white;
+.canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  width: 100%;
+  height: 100%;
+
+  border: 1px solid #fafafa; 
+   
+  transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+}
+
+.help {
+  position: absolute;
+  top: 5%;
+  right: 5%;  
+  z-index: 1;
+  width: 64px;
+  height: 64px;  
+  background: url(img/help.png) no-repeat 0 0 / cover;
+  box-shadow: inset 10px 5px (98, 23, 99, 0.6),
+      0 5px 5px rgb(0 0 0 / 20%);
+  cursor: pointer;
+}
+
+.help:hover,
+.help:focus {
+  background: url(img/help_focus.png) no-repeat 0 0 / cover;
+}
+
+.help__list {
+  list-style: square;
+  text-align: left;
 }
 
 *,
 *:before,
 *:after {
   box-sizing: border-box;
+}
+
+.nowrap {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.hidden {
+  display: none;
 }
 
 a {
@@ -56,6 +90,8 @@ a:focus,
 a:active {
   color: #848484;
 }
+
+/* ===================== Footer ===================== */
 
 .footer {
   position: fixed;
@@ -115,3 +151,331 @@ a:active {
 .github-icon:focus {
   background-color: #848484;
 }
+
+/* ================== End of Footer ================== */
+
+
+
+/* ===================== Modal ===================== */
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(34, 6, 112, 0.3);
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.5s;
+}
+
+.modal.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+
+
+/* ================== Modal content ================== */
+
+.modal__content {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  width: 40vw;
+  padding: 2%;  
+  border-radius: 12px;
+  background: linear-gradient(to bottom,
+    rgba(198, 53, 201, 0.6) 0%,
+    rgba(129, 30, 131, 0.6) 100%);
+  box-shadow: inset 10px 5px (98, 23, 99, 0.6),
+    0 5px 5px rgb(0 0 0 / 20%);  
+  transform: scale(0.5);
+  transition: all 0.4s linear;
+  overflow: auto;
+}
+
+.modal__content.active {
+  transform: scale(1);
+}
+
+.rules {
+  margin: 0 auto 0.5rem;
+  letter-spacing: 0;
+}
+
+.modal__greeting {
+  flex-basis: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
+  text-align: center;
+  letter-spacing: 0.1em;  
+  opacity: 0.8;
+}
+
+.modal__greeting--main,
+.modal__greeting--secondary {
+  margin: 0 0 20px;
+}
+
+.flashing__message {
+  font-weight: bold;
+
+  -webkit-animation: flashing__message 3s linear infinite;
+  animation: flashing__message 3s linear infinite;
+}
+
+@-webkit-keyframes flashing__message {
+  0% {
+      color: rgb(239, 239, 239);
+  }  
+  50% {
+      color: rgb(198, 53, 201);
+  }  
+  100% {
+      color: rgb(239, 239, 239);
+  }
+}
+
+@keyframes flashing__message {
+  0% {
+      color: rgb(239, 239, 239);
+  }  
+  50% {
+      color: rgb(198, 53, 201);
+  }  
+  100% {
+      color: rgb(239, 239, 239);
+  }
+}
+
+/* ============== End of Modal content ============== */
+
+
+
+/* ==================== Buttons ==================== */
+
+.modal__buttonsarea {
+  flex-basis: 50%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.modal__button {
+  display: inline-block;
+  margin: 1%;
+  padding: 2% 4%;  
+  font-size: 110%;
+  font-weight: 600;
+  color: #fafafa;
+  text-align: center;
+  text-transform: uppercase;
+  vertical-align: middle;  
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;  
+  transition: all 0.4s linear, opacity 0.4s linear;
+  box-sizing: border-box;
+}
+
+.modal__button:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.button__green {
+  color: #E8F5E9;
+  border-color: #43A047;
+  background: linear-gradient(to bottom, #81C784 0%, #66BB6A 100%);
+  box-shadow: inset 0 1px #c8e6c9,
+   0 1px 2px rgb(0 0 0 / 20%);
+}
+
+.button__green:hover,
+.button__green:focus {
+  border-color: #66BB6A;
+  background: linear-gradient(to bottom, #a5d6a7 0%, #81c784 100%);
+  box-shadow: inset 0 1px #e8f5e9,
+    0 2px 3px rgb(0 0 0 / 20%);
+  outline: transparent;  
+  animation: pulseBeginner 1.6s infinite;
+  transform: scale(1.15);
+}
+
+@-webkit-keyframes pulseBeginner {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(129, 199, 132, 0.6);
+  }  
+  70% {
+    -webkit-box-shadow: 0 0 0 10px rgba(129, 199, 132, 0);
+  }  
+  100% {
+    -webkit-box-shadow: inset 0 1px #e8f5e9,
+     0 2px 3px rgb(0 0 0 / 20%);
+  }
+}
+
+@keyframes pulseBeginner {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(129, 199, 132, 0.6);
+    box-shadow: 0 0 0 0 rgba(129, 199, 132, 0.6);
+  }  
+  70% {
+    -moz-box-shadow: 0 0 0 10px rgba(129, 199, 132, 0);
+    box-shadow: 0 0 0 10px rgba(129, 199, 132, 0);
+  }  
+  100% {
+    -moz-box-shadow: inset 0 1px #e8f5e9, 
+    0 2px 3px rgb(0 0 0 / 20%);
+    box-shadow: inset 0 1px #e8f5e9, 
+    0 2px 3px rgb(0 0 0 / 20%);
+  }
+}
+
+.button__green:active {
+  border-color: #388E3C;
+  color: #C8E6C9;
+  background: linear-gradient(to bottom, #66BB6A 0%, #43A047 100%);
+  box-shadow: inset 0 2px 2px #388e3c;
+}
+
+.button__green:disabled {
+  background: #A5D6A7;
+  border-color: #81C784;
+}
+
+.button__blue {
+  color: #e3f2fd;
+  border-color: #1e88e5;
+  background: linear-gradient(to bottom, #64b5f6 0%, #42a5f5 100%);
+  box-shadow: inset 0 1px #bbdefb,
+    0 1px 2px rgb(0 0 0 / 20%);
+}
+
+.button__blue:hover,
+.button__blue:focus {
+  border-color: #42a5f5;
+  background: linear-gradient(to bottom, #90caf9 0%, #65b5f6 100%);
+  box-shadow: inset 0 1px #e3f2fd,
+    0 2px 3px rgb(0 0 0 / 20%);
+  outline: transparent;  
+  animation: pulseGamer 1.6s infinite;
+  transform: scale(1.15);
+}
+
+@-webkit-keyframes pulseGamer {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(101, 181, 246, .6);
+  }  
+  70% {
+    -webkit-box-shadow: 0 0 0 10px rgba(101, 181, 246, 0);
+  }  
+  100% {
+    -webkit-box-shadow: inset 0 1px #e3f2fd,
+        0 2px 3px rgb(0 0 0 / 20%);
+  }
+}
+
+@keyframes pulseGamer {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(101, 181, 246, .6);
+    box-shadow: 0 0 0 0 rgba(101, 181, 246, .6);
+  }  
+  70% {
+    -moz-box-shadow: 0 0 0 10px rgba(101, 181, 246, 0);
+    box-shadow: 0 0 0 10px rgba(101, 181, 246, 0);
+  }  
+  100% {
+    -moz-box-shadow: inset 0 1px #e3f2fd,
+      0 2px 3px rgb(0 0 0 / 20%);
+    box-shadow: inset 0 1px #e3f2fd,
+      0 2px 3px rgb(0 0 0 / 20%);
+  }
+}
+
+.button__blue:active {
+  border-color: #1976d2;
+  color: #bbdefb;
+  background: linear-gradient(to bottom, #42a5f5 0%, #1e88e5 100%);
+  box-shadow: inset 0 2px 2px #1976d2;
+}
+
+.button__blue:disabled {
+  background: #90caf9;
+  border-color: #64b5f6;
+}
+
+.button__orange {
+  color: #FFF3E0;
+  border-color: #FB8C00;
+  background: linear-gradient(to bottom, #FFB74D 0%, #FFA726 100%);
+  box-shadow: inset 0 1px #ffe0b2,
+    0 1px 2px rgb(0 0 0 / 20%);
+}
+
+.button__orange:hover,
+.button__orange:focus {
+  border-color: #FFA726;
+  background: linear-gradient(to bottom, #FFCC80 0%, #ffb74d 100%);
+  box-shadow: inset 0 1px #fff3e0,
+    0 2px 3px rgb(0 0 0 / 20%);
+  outline: transparent;  
+  animation: pulseProfessional 1.6s infinite;
+  transform: scale(1.15);
+}
+
+@-webkit-keyframes pulseProfessional {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(255, 183, 77, .6);
+  }  
+  70% {
+    -webkit-box-shadow: 0 0 0 10px rgba(255, 183, 77, 0);
+  }  
+  100% {
+    -webkit-box-shadow: inset 0 1px #fff3e0,
+      0 2px 3px rgb(0 0 0 / 20%);
+  }
+}
+
+@keyframes pulseProfessional {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(255, 183, 77, .6);
+    box-shadow: 0 0 0 0 rgba(255, 183, 77, .6);
+  }  
+  70% {
+    -moz-box-shadow: 0 0 0 10px rgba(255, 183, 77, 0);
+    box-shadow: 0 0 0 10px rgba(255, 183, 77, 0);
+  }  
+  100% {
+    -moz-box-shadow: inset 0 1px #fff3e0,
+      0 2px 3px rgb(0 0 0 / 20%);
+    box-shadow: inset 0 1px #fff3e0,
+      0 2px 3px rgb(0 0 0 / 20%);
+  }
+}
+
+.button__orange:active {
+  border-color: #F57C00;
+  color: #FFE0B2;
+  background: linear-gradient(to bottom, #FFA726 0%, #FB8C00 100%);
+  box-shadow: inset 0 2px 2px #f57c00;
+}
+
+.button__orange:disabled {
+  background: #FFCC80;
+  border-color: #FFB74D;
+}
+
+/* ================= End of Buttons ================= */
+
+/* ================== End of Modal ================== */
