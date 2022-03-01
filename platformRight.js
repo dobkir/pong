@@ -1,8 +1,8 @@
 game.platformRight = {
   width: 40,
-  height: 148,
+  height: 164,
   x: game.width - 40,
-  y: (game.height - 148) / 2,
+  y: (game.height - 164) / 2,
   velocity: 6,
   vY: 0,  // Y-axis movement velocity
   ball: game.ball,
@@ -11,14 +11,13 @@ game.platformRight = {
     // this.vY = this.velocity
     this.vY = Math.abs(this.ball.vY)
 
-    if (this.ball.y < this.y + this.height / 2) {
-      this.y = this.y - this.ball.vY
-    }
-    else {
+    const diff = this.y - this.ball.y
+    if (diff < 0 && diff < -this.height * 0.5) { // move down
       this.y = this.y + this.ball.vY
-    }
-    if (50 < this.y && this.y < game.height - this.height - 50) {
-      this.y = this.y
+    } else if (diff > 0 && diff > this.height * 0.5) { // move up
+      this.y = this.y - this.ball.vY
+    } else {
+      this.y = this.y  // stay put
     }
   },
 
@@ -34,7 +33,7 @@ game.platformRight = {
     const canvasTopSide = 0
     const canvasBottomSide = game.height
 
-    if (platformTopSide < canvasTopSide || platformBottomSide > canvasBottomSide) {
+    if (platformTopSide <= canvasTopSide || platformBottomSide >= canvasBottomSide) {
       this.vY = 0
     }
   }

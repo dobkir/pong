@@ -3,7 +3,7 @@ game.ball = {
   height: 40,
   x: 40,
   y: (game.height - 40) / 2,
-  velocity: 4,
+  velocity: 8,
   vX: 0,  // X-axis movement velocity
   vY: 0,  // Y-axis movement velocity
 
@@ -17,9 +17,55 @@ game.ball = {
     if (this.vX) {
       this.x += this.vX
     }
-    // The random movement of a ball along the x-axis
+    // The random movement of a ball along the Y-axis
     if (this.vY) {
       this.y += this.vY
+    }
+  },
+
+  isSpritesCollide(element) {
+    // Change of coordinates on next render
+    const x = this.x + this.vX
+    const y = this.y + this.vY
+
+    // Checking the collision event of the ball and the block
+    if (x + this.width > element.x &&
+      x < element.x + element.width &&
+      y + this.height > element.y &&
+      y < element.y + element.height) {
+      return true
+    }
+    return false
+  },
+
+  // Bumping the ball off the right platform
+  // Here I reverse a movement by the x-axis direction of the ball. 
+  // In this case, the angle of movement is also mirrored to the opposite angle.
+  bumpRightPlatform() {
+    this.vX *= -1
+  },
+
+  // Bumping the ball off the platform
+  bumpLeftPlatform() {
+    // Если делать отскок под зеркальным углом, как у bumpRightPlatform(),
+    // то не получится управлять углом отскока. Поэтому делаю особый метод
+    // для платформы игрока, где угол отскока зависит от точки касания мячом
+    // платформы
+    if (game.platformLeft.vY) {
+      this.y += game.platformLeft.vY
+    }
+    // If the ball moving right, bumpPlatform() shouldn't act
+    if (this.vX < 0) {
+      // Here I reverse a movement by the X-axis direction of the ball. 
+      // In this case, the angle of movement is also mirrored to the opposite angle.
+      this.vX = this.velocity
+      // The further from the center is the collision of the ball, 
+      // and the platform occurs, then the sharper the angle of rebound.
+
+      // The coordinates of the point where the ball touches a platform
+      let collideCoordinate = this.y + this.width / 2
+      // Offset on the y-axis to obtain the correct bounce angle of the ball from the platform
+      this.vY = this.velocity * game.platformLeft.getTouchOffset(collideCoordinate)
     }
   },
 
@@ -43,21 +89,19 @@ game.ball = {
 
     if (ballLeftSide < canvasLeftSide) {
       game.addScoreComputer()
-    } else if (ballRightSide > canvasRightSide) {
+    } else if (ballRightSide >= canvasRightSide) {
       game.addScorePlayer()
-    } else if (ballTopSide < canvasTopSide) {
+    } else if (ballTopSide <= canvasTopSide) {
       this.y = 0
       this.vY = this.velocity
-    } else if (ballBottomSide > canvasBottomSide) {
+    } else if (ballBottomSide >= canvasBottomSide) {
       this.y = canvasBottomSide - this.height
       this.vY = -this.velocity
     }
   },
 
   random(min, max) {
-    min = Math.ceil(min)
-    max = Math.floor(max)
     // Get a random integer in a given range
-    return Math.floor(Math.random() * (max - min + 1)) + min
+    return Math.floor(Math.random() * (max - min + 1) + min)
   },
 }
