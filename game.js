@@ -67,6 +67,31 @@ const game = {
     this.context.font = "22px Arial"
   },
 
+  hideMouseCursor() {
+    /*
+     *  The disappearance of the cursor if it is not used 
+     *  for 3 seconds after the last click or moving
+     */
+    let mouseTimer = null, cursorVisible = true;
+
+    function disappearCursor() {
+      mouseTimer = null;
+      document.body.style.cursor = "none";
+      cursorVisible = false;
+    }
+
+    document.onmousemove = function () {
+      if (mouseTimer) {
+        window.clearTimeout(mouseTimer);
+      }
+      if (!cursorVisible) {
+        document.body.style.cursor = "default";
+        cursorVisible = true;
+      }
+      mouseTimer = window.setTimeout(disappearCursor, 3000);
+    };
+  },
+
   setLevel() {
     this.toggleHelpIcon()
     function chooseLevel(event) {
@@ -272,6 +297,7 @@ const game = {
   // Initialization of all components the game required
   initGame() {
     this.getLocalStorage()
+    this.hideMouseCursor()
 
     this.initCanvas()
     this.initContext()
