@@ -1,5 +1,3 @@
-
-
 const KEYS = {
   SPACE: 32,
   UP: 38,
@@ -78,6 +76,7 @@ const game = {
   renderSprites() {
     // Clear sprites rectangles before each new rendering
     this.context.clearRect(0, 0, this.width, this.height)
+    // Render sprites 
     Object.keys(this.sprites).forEach(sprite => {
       this.context.drawImage(
         this.sprites[sprite],
@@ -89,7 +88,30 @@ const game = {
     })
   },
 
+  collideBallAndPlatform(obj1, obj2) {
+    if (obj1.x + obj1.width > obj2.x &&
+      obj1.x < obj2.x + obj2.width &&
+      obj1.y + obj1.height > obj2.y &&
+      obj1.y < obj2.y + obj2.height) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  },
+
   updateState() {
+    if ((this.collideBallAndPlatform(this.platformLeft, this.ball) && this.ball.vX < 0) ||
+      (this.collideBallAndPlatform(this.platformRight, this.ball) && this.ball.vX > 0)) {
+      this.ball.vX = -this.ball.vX
+    }
+    // Coordinate increment
+    this.ball.x += this.ball.vX
+    this.ball.y += this.ball.vY
+    this.platformLeft.collideCanvasBounds()
+    this.platformRight.collideCanvasBounds()
+    this.ball.collideCanvasBounds()
+    this.platformRight.moveArtificialIntelligence()
     this.platformLeft.move()
     this.ball.move()
   },
@@ -111,11 +133,6 @@ const game = {
   initGame() {
     this.initCanvas()
     this.setKeyboardKeyEvents()
-  },
-
-  random(min, max) {
-    // Get a random integer in a given range
-    return Math.floor(Math.random() * (max - min + 1) + min)
   },
 
   startGame() {
