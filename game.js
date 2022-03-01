@@ -8,6 +8,7 @@ const KEYS = {
   DOWN: 40,
   H: 72,
   P: 80,
+  R: 82,
 }
 
 const game = {
@@ -16,7 +17,6 @@ const game = {
   context: null,
   gameRun: true,
   gamePause: false,
-  gameOver: false,
   level: null,
   platformLeft: null,
   platformRight: null,
@@ -121,9 +121,17 @@ const game = {
     // Paused and unpaused the game
     window.addEventListener('keydown', e => {
       if (!this.gamePause && e.keyCode === KEYS.P) {
+        document.body.addEventListener('click', this.confirmRestartGame.bind(game))
         this.pausedGame()
       } else if (this.gamePause && (e.keyCode === KEYS.P || e.keyCode === KEYS.ESCAPE)) {
+        document.body.removeEventListener('click', this.confirmRestartGame.bind(game))
         this.unpausedGame()
+      }
+    })
+    // Hard restart the current game
+    window.addEventListener('keydown', e => {
+      if (e.keyCode === KEYS.R) {
+        this.restartGame()
       }
     })
   },
@@ -262,13 +270,19 @@ const game = {
     })
   },
 
+  confirmEndGame(event) {
+    if (event.target.value === 'mainMenu') {
+      this.reloadGame()
+    }
+    document.body.removeEventListener('click', this.confirmEndGame)
+  },
+
   endGame(messageType) {
     if (!this.modalWindow.content && this.gameRun) {
       this.modalWindow.content = messageType
       this.modalWindow.openModal()
       this.clearLocalStorage()
       this.gameRun = false
-      // this.gameOver = true
 
       document.body.addEventListener('click', this.confirmEndGame.bind(game))
     }
@@ -288,19 +302,25 @@ const game = {
     this.runGame()
   },
 
+  confirmRestartGame(event) {
+    if (event.target.value === 'restartGame') {
+      this.modalWindow.closeModal()
+      this.restartGame()
+    }
+    document.body.removeEventListener('click', this.confirmRestartGame)
+  },
+
+  restartGame() {
+    this.clearLocalStorage()
+    this.reloadGame()
+  },
+
   clearParameters() {
     this.platformLeft = game.platformLeft
     this.platformRight = game.platformRight
     this.ball = game.ball
     this.scorePlayer = 0
     this.scoreComputer = 0
-  },
-
-  confirmEndGame(event) {
-    if (event.target.value === 'mainMenu') {
-      this.reloadGame()
-    }
-    document.body.removeEventListener('click', this.confirmEndGame)
   },
 
   closeModalWindow(event) {
@@ -395,4 +415,6 @@ const game = {
 
 window.addEventListener('load', () => {
   game.initGame()
+  console.log('click key "P" to pause')
+  console.log('click key "R" to hard restart the game')
 })

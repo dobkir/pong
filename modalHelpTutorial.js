@@ -8,6 +8,7 @@ game.modalHelpTutorial =
         <li>"Down" key - moving the platform down</li>
         <li>"Space" key - moving the ball start</li>
         <li>"P" key - pause/unpause</li>
+        <li>"R" key - hard restart the current game</li>
         <li>"H" key - open/closing the game tutorial</li>
         <li>"Esc" key - close any modal window</li>
       </ul>
