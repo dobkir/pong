@@ -29,7 +29,11 @@ const game = {
     platformRight: null,
     ball: null,
   },
-
+  sounds: {
+    bump: null,
+    fail: null,
+    victory: null,
+  },
 
   initCanvas() {
     let realWidth = window.innerWidth * window.devicePixelRatio
@@ -136,24 +140,41 @@ const game = {
     })
   },
 
-  // Preload the images
-  preloadSprites(callback) {
+  // Preload images and sounds
+  preloadResouses(callback) {
     let loadedSprites = 0
-    let requiredSprites = Object.keys(this.sprites).length;
-    let onImageLoad = () => {
+    let loadedSounds = 0
+    let requiredResourses = Object.keys(this.sprites).length
+    requiredResourses += Object.keys(this.sounds).length
+
+    // Checking up that all sprites and sounds are loaded, and only then run a game
+    let onResourceLoad = () => {
       // On the fact of each upload, I'll make an increment that 
-      // means one more image has been currently uploaded
+      // means one more image and sound have been currently uploaded
       ++loadedSprites
-      if (loadedSprites >= requiredSprites) {
+      ++loadedSounds
+      if (loadedSprites && loadedSounds >= requiredResourses) {
         callback()
       }
     }
 
+    this.preloadSprites(onResourceLoad)
+    this.preloadAudio(onResourceLoad)
+  },
+
+  preloadSprites(onResourceLoad) {
     for (let key in this.sprites) {
       this.sprites[key] = new Image()
       this.sprites[key].src = `img/${key}.png`
       // Continue only when all sprites are loaded
-      this.sprites[key].addEventListener('load', onImageLoad)
+      this.sprites[key].addEventListener('load', onResourceLoad)
+    }
+  },
+
+  preloadAudio(onResourceLoad) {
+    for (let key in this.sounds) {
+      this.sounds[key] = new Audio("sounds/" + key + ".mp3")
+      this.sounds[key].addEventListener("canplaythrough", onResourceLoad, { once: true })
     }
   },
 
@@ -265,7 +286,7 @@ const game = {
 
   startGame() {
     this.initGame()
-    this.preloadSprites(() => {
+    this.preloadResouses(() => {
       this.runGame()
     })
   },
@@ -407,7 +428,7 @@ const game = {
       localStorage.getItem('level') === null ||
         localStorage.getItem('level') == 0 ?
         this.setLevelSettings() :
-        this.preloadSprites(() => {
+        this.preloadResouses(() => {
           this.runGame()
         })
   },

@@ -42,11 +42,13 @@ game.ball = {
   // Here I reverse a movement by the x-axis direction of the ball. 
   // In this case, the angle of movement is also mirrored to the opposite angle.
   bumpRightPlatform() {
+    game.sounds.bump.play()
     this.vX *= -1
   },
 
   // Bumping the ball off the platform
   bumpLeftPlatform() {
+    game.sounds.bump.play()
     // Если делать отскок под зеркальным углом, как у bumpRightPlatform(),
     // то не получится управлять углом отскока. Поэтому делаю особый метод
     // для платформы игрока, где угол отскока зависит от точки касания мячом
@@ -88,13 +90,19 @@ game.ball = {
     const canvasBottomSide = game.height
 
     if (ballLeftSide < canvasLeftSide) {
+      game.sounds.bump.pause()
+      game.sounds.fail.play()
       game.addScoreComputer()
     } else if (ballRightSide >= canvasRightSide) {
+      game.sounds.bump.pause()
+      game.sounds.victory.play()
       game.addScorePlayer()
     } else if (ballTopSide <= canvasTopSide) {
+      game.sounds.bump.play()
       this.y = 0
       this.vY = this.velocity
     } else if (ballBottomSide >= canvasBottomSide) {
+      game.sounds.bump.play()
       this.y = canvasBottomSide - this.height
       this.vY = -this.velocity
     }
