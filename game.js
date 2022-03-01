@@ -5,8 +5,10 @@ const KEYS = {
 }
 
 const game = {
-  width: 960,
-  height: 640,
+  // width: 960,
+  // height: 640,
+  width: innerWidth,
+  height: innerHeight,
   context: null,
   gameRun: true,
   gamePause: false,
@@ -36,18 +38,6 @@ const game = {
     } else {
       alert('To display the content, please update your browser.')
     }
-    // // рисуем на поле счёт
-    // this.context.font = 'bold 128px courier';
-    // this.context.textAlign = 'center';
-    // this.context.textBaseline = 'top';
-    // this.context.fillStyle = '#ccc';
-    // this.context.fillText("ai.scores", 100, 0);
-    // this.context.fillText("player.scores", game.width - 100, 0);
-    // for (var i = 10; i < game.height; i += 45) // линия разделяющая игровое поле на две части
-    // {
-    //   this.context.fillStyle = "#ccc";
-    //   this.context.fillRect(game.width / 2 - 10, i, 20, 30);
-    // }
   },
 
   setTextFont() {
@@ -95,6 +85,8 @@ const game = {
   renderSprites() {
     // Clear sprites rectangles before each new rendering
     this.context.clearRect(0, 0, this.width, this.height)
+    // Scale canvas
+    this.context.scale(innerWidth / this.width, innerHeight / this.height)
     // Render sprites 
     Object.keys(this.sprites).forEach(sprite => {
       this.context.drawImage(
